@@ -10,7 +10,7 @@ jobs:
     name: Documentation present
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Verify required documents exist
         run: |
           for f in README.md docs/architecture.md docs/comparison-matrix.md docs/tech-stack-summary.md docs/adr/ADR-001-technology-stack.md docs/diagrams/architecture.png; do
@@ -24,7 +24,7 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         if: ${{ hashFiles('backend/package.json') != '' }}
         with:
@@ -45,7 +45,7 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
         if: ${{ hashFiles('frontend/pubspec.yaml') != '' }}
         with:
@@ -65,7 +65,7 @@ jobs:
       run:
         working-directory: ai-service
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         if: ${{ hashFiles('ai-service/requirements.txt') != '' }}
         with:
