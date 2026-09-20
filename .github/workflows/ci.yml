@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  docs-check:
+    name: Documentation present
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify required documents exist
+        run: |
+          for f in README.md docs/architecture.md docs/comparison-matrix.md docs/tech-stack-summary.md docs/adr/ADR-001-technology-stack.md docs/diagrams/architecture.png; do
+            test -f "$f" || { echo "Missing $f"; exit 1; }
+          done
+
+  backend:
+    name: Backend (NestJS)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        if: ${{ hashFiles('backend/package.json') != '' }}
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Install, lint, test
+        if: ${{ hashFiles('backend/package.json') != '' }}
+        run: |
+          npm ci
+          npm run lint --if-present
+          npm test --if-present
+
+  frontend:
+    name: Frontend (Flutter)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        if: ${{ hashFiles('frontend/pubspec.yaml') != '' }}
+        with:
+          channel: stable
+          cache: true
+      - name: Analyze and test
+        if: ${{ hashFiles('frontend/pubspec.yaml') != '' }}
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+
+  ai-service:
+    name: AI service (FastAPI)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ai-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        if: ${{ hashFiles('ai-service/requirements.txt') != '' }}
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: ai-service/requirements.txt
+      - name: Install, lint, test
+        if: ${{ hashFiles('ai-service/requirements.txt') != '' }}
+        run: |
+          pip install -r requirements.txt
+          pip install ruff pytest
+          ruff check .
+          pytest
