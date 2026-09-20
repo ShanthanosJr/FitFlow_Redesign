@@ -65,4 +65,4 @@ By IT23641624 - Ravishan R K
 
 ## Licence
 
-Coursework project. Add a licence file if the repository is made public.
+This project is licensed under the [MIT License](LICENSE).
