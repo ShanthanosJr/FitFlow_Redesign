@@ -66,7 +66,7 @@ jobs:
         working-directory: ai-service
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         if: ${{ hashFiles('ai-service/requirements.txt') != '' }}
         with:
           python-version: "3.12"
